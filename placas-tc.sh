@@ -1,24 +1,16 @@
 #/bin/bash
 #
-# Este Script ejecuta manualmente la inserción de placas y overlays sobre un video.
-#	USO:	placas-tc-manual.sh {Video de entrada}
+# Este script queda ejecutado como un servicio.
+# Busca constantemente nuevos videos en un watchfolder, y al encontrar uno
+# realiza la inserción de placas y overlays.
 #
-
-if [ "$1" = "" ]; then
-	echo "ERROR: No se especificó archivo."
-	echo "USO: placas-tc-manual.sh {Archivo}"
-	exit 1
-fi
-
-ARG=$1
-ARGFNAME=${ARG%.*}
 
 # Cargar configuración
 source /etc/placas-tc.conf
 
 # Funciones
 function loguear {
-	echo "$(date +'%H:%M:%S') $1" >> "$LOG"
+echo "$(date +'%H:%M:%S') $1" >> "$LOG"
 }
 
 # Contar placas
@@ -26,14 +18,15 @@ cntin=$(find "$PLACAS_IN" -maxdepth 1 -name '*.mxf' 2>/dev/null | wc -l)
 cntout=$(find "$PLACAS_OUT" -maxdepth 1 -name '*.mxf' 2>/dev/null | wc -l)
 cntlay=$(find "$LAYERS" -maxdepth 1 -name '*.png' 2>/dev/null  | wc -l)
 
+
 if [ "$cntin" = "0" ] && [ "$cntout" = "0" ] && [ "$cntlay" = "0" ]; then
-	loguear "ERROR: Se intentó ejecutar, pero no se encontraron ni placas ni overlays."
+	loguear "ERROR: Se intentó iniciar servicio, pero no se encontraron ni placas ni overlays."
 	echo "ERROR: No se encontraron placas ni overlays."
 	exit 1
 fi
 
-# Inicio de ejecución
-loguear "--- EJECUCIÓN MANUAL ---"
+# Inicio de ejecucin
+loguear "--- INICIO DE SERVICIO ---"
 loguear "Se inicia ejecución con $PLACAS_IN placas de entrada, $PLACAS_OUT de salida y $LAYERS overlays."
 
 PLACAS_IN_STR=""
@@ -93,8 +86,23 @@ if [ "$cntin" != "0" ] || [ "$cntout" != "0" ]; then 		# Verificar si hay placas
 	OUTAS2="[a2]"
 fi
 
-FFSTRING="$FFMPEG $OPTSIN -i $1 $LAYERS_STR $PLACAS_IN_STR $PLACAS_OUT_STR -c:v $CV -b:v $BRV -c:a $CA -b:a $BRA -filter_complex \"$FILTRO\" -map '$OUTVS' -map '$OUTAS1' -map '$OUTAS2' $OUTV/$ARGFNAME.$FMT" # Armar el string que se va a usar para transcodear
+FFSTRING1="$FFMPEG $OPTSIN -i"
+FFSTRING2="$LAYERS_STR $PLACAS_IN_STR $PLACAS_OUT_STR -c:v $CV -b:v $BRV -c:a $CA -b:a $BRA -filter_complex \"$FILTRO\" -map '$OUTVS' -map '$OUTAS1' -map '$OUTAS2' $OUTV/$ARGFNAME.$FMT"
 
-eval $FFSTRING
-
-loguear "--- FIN DE EJECUCION MANUAL ---"
+while :; do
+    invidcnt=$(find "$INV" -maxdepth 1 -cmin +0.25 -name '*.mxf' | wc -l)
+	if [ "$invidcnt" != "0" ]; then
+		
+		for cvideo in "$INV"/*.mxf; do
+			loguear "Archivo $cvideo recibido"
+			echo "Archivo $cvideo recibido"
+			FFSTRING="$FFSTRING1 $cvideo $FFSTRING2"
+			loguear "Ejecución: $FFSTRING"
+			echo "Ejecución: $FFSTRING"
+			eval $FFSTRING
+			loguear "Ejecución finalizada para $cvideo."
+			mv $cvideo $OUTOV
+		done
+  
+	fi
+done
