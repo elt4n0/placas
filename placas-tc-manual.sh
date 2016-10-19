@@ -69,14 +69,12 @@ if [ "$cntlay" != "0" ]; then
 			FILTRO="$FILTRO[0:0][1:0] overlay [vo$al]"
 		else
 			FILTRO="$FILTRO; [vo$((al-1))][$al:0] overlay [vo$al]"
-			vconcat="[vo$al]"
-			OUTVS="[vo$al]"
 		fi
+		vconcat="[vo$al]"
+		OUTVS="[vo$al]"
 		((al++))
 	done
 fi
-
-echo $cntin
 
 if [ "$cntin" != "0" ] || [ "$cntout" != "0" ]; then 		# Verificar si hay placas para poner
 	concant=1		# Cantidad de archivos a concatenar. Empieza en 1 y crece.
@@ -99,7 +97,7 @@ if [ "$cntin" != "0" ] || [ "$cntout" != "0" ]; then 		# Verificar si hay placas
 	if [ "$cntout" != "0" ]; then		# Si hay placas de atrás
 		for i in "$PLACAS_OUT"/*.mxf; do
 			PLACAS_OUT_STR="$PLACAS_OUT_STR -i \"$i\""
-			FILTRO="$FILTRO [$ain:0][$ain:1][$ain:2]"
+			FILTRO="$FILTRO[$ain:0][$ain:1][$ain:2]"
 			((ain++))
 			((concant++))
 		done
@@ -111,6 +109,6 @@ if [ "$cntin" != "0" ] || [ "$cntout" != "0" ]; then 		# Verificar si hay placas
 	OUTAS2="[a2]"
 fi
 
-FFSTRING="$FFMPEG $OPTSIN -i $1 $LAYERS_STR $PLACAS_IN_STR $_PLACAS_OUT_STR -c:v $CV -b:v $BRV -c:a $CA -b:a $BRA -filter_complex \"$FILTRO\" -map '$OUTVS' -map '$OUTAS1' -map '$OUTAS2' $OUTV/$ARGFNAME.$FMT" # Armar el string que se va a usar para transcodear
+FFSTRING="$FFMPEG $OPTSIN -i $1 $LAYERS_STR $PLACAS_IN_STR $PLACAS_OUT_STR -c:v $CV -b:v $BRV -c:a $CA -b:a $BRA -filter_complex \"$FILTRO\" -map '$OUTVS' -map '$OUTAS1' -map '$OUTAS2' $OUTV/$ARGFNAME.$FMT" # Armar el string que se va a usar para transcodear
 
 eval $FFSTRING
