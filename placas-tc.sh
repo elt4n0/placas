@@ -27,7 +27,7 @@ fi
 
 # Inicio de ejecucin
 loguear "--- INICIO DE SERVICIO ---"
-loguear "Se inicia ejecución con $PLACAS_IN placas de entrada, $PLACAS_OUT de salida y $LAYERS overlays."
+loguear "Se inicia ejecución con $cntin placas de entrada, $cntout de salida y $cntlay overlays."
 
 PLACAS_IN_STR=""
 PLACAS_OUT_STR=""
