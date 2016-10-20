@@ -14,4 +14,17 @@ Este script permite automatizar la concatenación de videos, insertado segmentos
   * LOG: Logfile
 3. Ejecutar "placas-tc-manual.sh {Archivo de entrada}" para generar un nuevo video con los parametros establecidos, sus overlays y placas.
 
+## Formatos
+
+Las placas de entrada y salida deberán estar, de momento, en formato 'mxf'.
+Los layers a sobreponer deberán estar en formato 'png', y ya que no se utilizan coordenadas, se recomienda que tengan el mismo tamaño que el video de entrada, y transparencia.
+
+**Se recuerda que en linux, las extensiones son case sensitive, por lo tanto un archivo extension 'MXF' o 'PNG' no será reconocido.**
+
+## Orden de placas y overlays
+
+Las placas se ponen en orden alfabético de nombre de archivo. Se recomienda que se depositen en sus carpetas con orden numerado. EJ:
+
+1_PLACA1.mxf
+2_PLACA2.mxf
 **MUY PRONTO** estará funcionando como servicio.
