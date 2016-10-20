@@ -23,10 +23,12 @@ Los layers a sobreponer deberán estar en formato 'png', y ya que no se utilizan
 
 ## Orden de placas y overlays
 
-Las placas se ponen en orden alfabético de nombre de archivo. Se recomienda que se depositen en sus carpetas con orden numerado.\n EJ:
+Las placas se ponen en orden alfabético de nombre de archivo. Se recomienda que se depositen en sus carpetas con orden numerado.
 
-1_PLACA1.mxf\n
-2_PLACA2.mxf\n
-...\n\n
+```
+1_PLACA1.mxf
+2_PLACA2.mxf
+...
+```
 
 **MUY PRONTO** estará funcionando como servicio.
